@@ -27,7 +27,7 @@ class App extends Component {
   }
 
   createTodo(todoText) {
-    let newTodo = { title: todoText, createdAt: new Date };
+    let newTodo = { title: todoText, createdAt: new Date() };
 
     axios({
       url: '/todos.json',
@@ -38,6 +38,22 @@ class App extends Component {
       let todos = this.state.todos;
       let newTodoId = response.data.name;
       todos[newTodoId] = newTodo;
+      this.setState({ todos: todos });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+    deleteTodo(todoId) {
+    axios({
+      url: `/todos/${todoId}.json`,
+      baseURL: 'https://todo-31265.firebaseio.com/',
+      method: "DELETE",
+    }).then((response) => {
+      let todos = this.state.todos;
+      console.log(todos);
+      delete todos[todoId];
+      console.log(todos[todoId]);
       this.setState({ todos: todos });
     }).catch((error) => {
       console.log(error);
@@ -72,6 +88,12 @@ class App extends Component {
             <h4>{todo.title}</h4>
             <div>{moment(todo.createdAt).calendar()}</div>
           </div>
+          <button
+            className="ml-4 btn btn-link"
+            onClick={ () => { this.deleteTodo(todoId) } }
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
       );
     }
